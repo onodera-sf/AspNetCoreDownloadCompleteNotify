@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+		<Description>Javascript でファイルのダウンロード後に処理を実行するサンプルです。</Description>
+		<Company>ソーサリーフォース (https://sorceryforce.net/)</Company>
+		<Authors>ソーサリーフォース (おのでら)</Authors>
+		<Copyright>Copyright (C) 2023-2023 ソーサリーフォース (おのでら)</Copyright>
+	</PropertyGroup>
+
+</Project>

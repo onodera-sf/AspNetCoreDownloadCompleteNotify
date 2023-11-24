@@ -1,0 +1,70 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<ul>
+  <li><a asp-page-handler="Download">ダウンロード (Javascript なし)</a></li>
+  <li><a asp-page-handler="Download" id="download">ダウンロード (Javascript あり)</a></li>
+</ul>
+
+@section Scripts {
+  <script>
+    $('#download').click(function (e) {
+      console.log('ダウンロードを開始します。');
+      e.preventDefault();  // href による画面遷移を抑止
+      let url = $(e.target).attr('href');  // href からダウンロード URL 取得
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);   // ダウンロード先 URL 設定
+      xhr.responseType = 'blob';   // バイナリデータ取得であることを指示
+
+      // ダウンロード完了後の処理を設定。この時点ではデータは取得してクライアントにありますが保存はしていません。
+      xhr.onload = function (oEvent) {
+        if (xhr.status !== 200) {
+          console.log(`データの取得に失敗しました。(status=${xhr.status})`);
+        } else {
+          // 取得したデータ
+          var blob = xhr.response;
+
+          // レスポンスヘッダーからサーバーから送られてきたファイル名を取得する
+          var fileName = '';
+          var disposition = xhr.getResponseHeader('Content-Disposition');
+          if (disposition && disposition.indexOf('attachment') !== -1) {
+            var filenameRegex = /filename[^;=\n]=((['"]).*?\2|[^;\n]*)/;
+            var matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) {
+              // 「filename*=UTF-8''%E3%83%87%E3%83%BC%E3%82%BF.txt;」からファイル名を取得
+              fileName = decodeURI(matches[1].replace(/['"]/g, '').replace('utf-8', '').replace('UTF-8', ''));
+            }
+          }
+          if (fileName === '') {
+            // ファイル名を取得できなかったら念のため URL をファイル名とする
+            var fileName = url.match('.+/(.+?)([\?#;].*)?$')[1];
+          }
+
+          // Blob オブジェクトを指す URL オブジェクトを作る
+          var objectURL = window.URL.createObjectURL(blob);
+          // リンク（<a>要素）を生成し、JavaScript からクリックする
+          var link = document.createElement('a');
+          document.body.appendChild(link);
+          link.href = objectURL;
+          link.download = fileName;   // download を指定するとブラウザで開くことなくダウンロードになる
+          link.click();
+          document.body.removeChild(link);
+
+          console.log('ダウンロードを完了しました。');
+        }
+      };
+
+      // リクエスト開始
+      xhr.send();
+    });
+  </script>
+}
